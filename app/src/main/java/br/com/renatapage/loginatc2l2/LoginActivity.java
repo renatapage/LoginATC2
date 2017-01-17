@@ -43,15 +43,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         lblErro.setText("");
 
-        if(txtUser.getText().toString().length() > 0 && isCadastrado(txtUser.getText().toString()).equals(getUniqueIDPreferences()) &&
-                txtSenha.getText().toString().length() > 0 && txtSenha.getText().toString().equals(getSenhaPreferences())){
+        if(txtUser.getText().toString().length() > 0 && isCadastrado(txtUser.getText().toString()).equals(loadPreferences("uniqueId")) &&
+                txtSenha.getText().toString().length() > 0 && txtSenha.getText().toString().equals(loadPreferences("senha"))){
 
-            String senha = txtSenha.getText().toString();
-            byte [] senhaHash = senha.getBytes() ;
+            byte [] senha = txtSenha.getText().toString().getBytes();
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("username", getUserPreferences());
-            intent.putExtra("senha",getSenhaHash(senhaHash).toString());
+            intent.putExtra("username", loadPreferences("username"));
+            intent.putExtra("senha",getSenhaHash(senha));
 
             startActivity(intent);
 
@@ -70,7 +69,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         try{
 
-            MessageDigest md5 = MessageDigest.getInstance("MD5");
+            MessageDigest md5 = MessageDigest.getInstance("SHA-512");
             md5.update(buffer);
             resultado = md5.digest();
 
@@ -92,28 +91,28 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
-    private String getUserPreferences(){  //Método para resgatar user em Shared Preferences.
+    private String loadPreferences(String key){ //Método para resgatar dados em Shared Preferences.
 
+        String retorno = "";
         SharedPreferences preferences = getPreferences(MODE_PRIVATE);
 
-        String retorno = preferences.getString("username", "");
+        switch (key){
 
-        return retorno;
-    }
+            case "uniqueId":
 
-    private String getSenhaPreferences(){  //Método para resgatar senha em Shared Preferences.
+                retorno = preferences.getString("uniqueId", "");
+                break;
 
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+            case "username":
 
-        String retorno = preferences.getString("senha", "");
+                retorno = preferences.getString("username", "");
+                break;
 
-        return retorno;
-    }
+            case "senha":
 
-    private String getUniqueIDPreferences(){  //Método para resgatar uniqueID em Shared Preferences.
-
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
-        String retorno = preferences.getString("uniqueId", "");
+                retorno = preferences.getString("senha", "");
+                break;
+        }
 
         return retorno;
     }
@@ -122,11 +121,13 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         String retorno = "";
 
-        if(username.equals(getUserPreferences())){
+        if(username.equals(loadPreferences("username"))){
 
-          retorno = getUniqueIDPreferences();
+          retorno = loadPreferences("uniqueId");
         }
 
         return retorno;
     }
+
+
 }

@@ -23,7 +23,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String user = extras.getString("username");
-        String senha = extras.getString("senha");
+        byte [] senhaByte = extras.getByteArray("senha");
+        String senha = new String(senhaByte);
+
 
         if(user != null){
 
